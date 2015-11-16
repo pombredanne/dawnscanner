@@ -215,6 +215,19 @@ module Dawn
       "#{@mvc_version}" if is_good_mvc?
     end
 
+    def reset_benchmark
+      @benchmark = {:checks=> 0, :elapsed=>0}
+      @benchmark
+    end
+    def reset
+      reset_benchmark
+      @applied = []
+      @applied_checks = 0
+      @skipped_checks = 0
+      @vulnerabilities = []
+      @mitigated_issues = []
+    end
+
     ## Security stuff applies here
     #
     # Public it applies a single security check given by its name
@@ -244,7 +257,7 @@ module Dawn
 
       return false if @checks.empty?
 
-      debug_me "engine enters benchmarking" if @benchmarking
+      debug_me "engine enters benchmarking #{@benchmark}" if @benchmarking
       start = Time.now if @benchmarking
 
       @checks.each do |check|
@@ -300,7 +313,7 @@ module Dawn
         return false
       end
 
-      debug_me "engine enters benchmarking" if @benchmarking
+      debug_me "engine enters benchmarking #{@benchmark}" if @benchmarking
       start = Time.now if @benchmarking
 
       @checks.each do |check|

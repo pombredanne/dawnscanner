@@ -52,7 +52,7 @@ opts    = GetoptLong.new(
   [ '--config-file',            '-c',   GetoptLong::REQUIRED_ARGUMENT],
 
   # service options
-  [ '--benchmarking',           '-B',   GetoptLong::NO_ARGUMENT],
+  [ '--benchmarking',           '-B',   GetoptLong::OPTIONAL_ARGUMENT],
   [ '--verbose',                '-V',   GetoptLong::NO_ARGUMENT],
   [ '--debug',                  '-D',   GetoptLong::NO_ARGUMENT],
   [ '--version',                '-v',   GetoptLong::NO_ARGUMENT],
@@ -72,6 +72,9 @@ opts.each do |opt, val|
   case opt
   when '--benchmarking'
     options[:benchmarking] = true
+    @benchmark_iterations = 10
+    @benchmark_iterations = val.to_i unless val.empty?
+
 
   when '--version'
     puts "#{Dawn::VERSION} [#{Dawn::CODENAME}]"
@@ -205,14 +208,20 @@ if options[:benchmarking]
   $logger.warn "putting engine in benchmarking mode"
   engine.benchmarking = true
   engine.load_knowledge_base(options[:enabled_checks])
-  ret = engine.apply_all
-
   rows = []
-  b = engine.benchmark
-  rows << [engine.target, engine.name, b[:checks], b[:elapsed], 1.0*b[:checks] / b[:elapsed]]
-  table = Terminal::Table.new :title=>"Engine benchmark", :headings=>['Application', 'Kind', 'Checks applied', 'Time (seconds)', 'Speed (checks/s)'], :rows=>rows
+  sum = 0
+  (1..@benchmark_iterations).each do|i|
+    ret = engine.apply_all
+    b = engine.benchmark
+    rows << [engine.target, engine.name, i, b[:checks], b[:elapsed], 1.0*b[:checks] / b[:elapsed]]
+    sum += 1.0*b[:checks] / b[:elapsed]
+    engine.reset
+  end
+
+  table = Terminal::Table.new :title=>"Engine benchmark", :headings=>['Application', 'Kind', 'Iteration', 'Checks applied', 'Time (seconds)', 'Speed (checks/s)'], :rows=>rows
   puts table
 
+  $logger.info "Mean check per second: #{sum / @benchmark_iterations}"
   $logger.bye
   Kernel.exit(0)
 end
