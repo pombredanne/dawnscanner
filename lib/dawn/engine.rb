@@ -43,6 +43,10 @@ module Dawn
     attr_reader   :applied_checks
     attr_reader   :skipped_checks
 
+    # We introduce benchmarking for apply* methods
+    attr_accessor :benchmarking
+    attr_reader   :benchmark
+
     def initialize(dir=nil, name="", options={})
       @name = name
       @scan_start = Time.now
@@ -63,6 +67,10 @@ module Dawn
       @skipped_checks = 0
       @gemfile_lock_sudo = false
 
+      @benchmark = {:checks=>0, :elapsed=>0}
+      @benchmarking = false
+      @benchmarking = options[:benchmarking] unless options[:benchmarking].nil?
+
       set_target(dir) unless dir.nil?
       @ruby_version = get_ruby_version if dir.nil?
       @gemfile_lock = options[:gemfile_name] unless options[:gemfile_name].nil? 
@@ -74,7 +82,6 @@ module Dawn
       if $logger.nil?
         $logger  = Codesake::Commons::Logging.instance
         $logger.helo "dawn-engine", Dawn::VERSION
-
       end
       $logger.warn "pattern matching security checks are disabled for Gemfile.lock scan" if @name == "Gemfile.lock"
       $logger.warn "combo security checks are disabled for Gemfile.lock scan" if @name == "Gemfile.lock"
@@ -205,7 +212,20 @@ module Dawn
     end
 
     def get_mvc_version
-      "#{@mvc_version}" if is_good_mvc? 
+      "#{@mvc_version}" if is_good_mvc?
+    end
+
+    def reset_benchmark
+      @benchmark = {:checks=> 0, :elapsed=>0}
+      @benchmark
+    end
+    def reset
+      reset_benchmark
+      @applied = []
+      @applied_checks = 0
+      @skipped_checks = 0
+      @vulnerabilities = []
+      @mitigated_issues = []
     end
 
     ## Security stuff applies here
@@ -215,8 +235,8 @@ module Dawn
     # name - the security check to be applied
     #
     # Examples
-    #   
-    #   engine.apply("CVE-2013-1800") 
+    #
+    #   engine.apply("CVE-2013-1800")
     #   # => boolean
     #
     # Returns a true value if the security check was successfully applied or false
@@ -236,6 +256,9 @@ module Dawn
       end
 
       return false if @checks.empty?
+
+      debug_me "engine enters benchmarking #{@benchmark}" if @benchmarking
+      start = Time.now if @benchmarking
 
       @checks.each do |check|
         if check.name == name
@@ -262,6 +285,7 @@ module Dawn
             @skipped_checks += 1
           end
         end
+        @benchmark = {:checks=> @applied_checks - @skipped_checks, :elapsed=>Time.now-start} if @benchmarking
       end
 
       false
@@ -289,6 +313,9 @@ module Dawn
         return false
       end
 
+      debug_me "engine enters benchmarking #{@benchmark}" if @benchmarking
+      start = Time.now if @benchmarking
+
       @checks.each do |check|
         unless ((check.kind == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK || check.kind == Dawn::KnowledgeBase::COMBO_CHECK ) && @gemfile_lock_sudo)
 
@@ -312,6 +339,7 @@ module Dawn
           debug_me "skipping check #{check.name}"
           @skipped_checks += 1
         end
+        @benchmark = {:checks=> @applied_checks - @skipped_checks, :elapsed=>Time.now-start} if @benchmarking
       end
       @scan_stop = Time.now
       debug_me("SCAN STOPPED: #{@scan_stop}")
