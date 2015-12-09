@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'dawn/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "dawnscanner"
+  gem.name          = "dawnscanner-benchmark"
   gem.version       = Dawn::VERSION
   gem.authors       = ["Paolo Perego"]
   gem.email         = ["paolo@dawnscanner.org"]
@@ -17,8 +17,8 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.cert_chain  = ['certs/paolo_at_dawnscanner_dot_org.pem']
-  gem.signing_key = File.expand_path("~/.ssh/paolo_at_dawnscanner_dot_org_private_key.pem") if $0 =~ /gem\z/
+  # gem.cert_chain  = ['certs/paolo_at_dawnscanner_dot_org.pem']
+  # gem.signing_key = File.expand_path("~/.ssh/paolo_at_dawnscanner_dot_org_private_key.pem") if $0 =~ /gem\z/
 
   gem.required_ruby_version = '>= 1.9.3'
 
