@@ -1,4 +1,5 @@
-require 'bundler'
+# Statistics stuff
+require 'code_metrics/statistics'
 
 module Dawn
   module Engine
@@ -20,6 +21,7 @@ module Dawn
     attr_reader :ruby_version
 
     attr_reader :engine_error
+    attr_reader :stats
 
     attr_reader :reflected_xss
 
@@ -43,9 +45,13 @@ module Dawn
     attr_reader   :applied_checks
     attr_reader   :skipped_checks
 
+<<<<<<< HEAD
     # We introduce benchmarking for apply* methods
     attr_accessor :benchmarking
     attr_reader   :benchmark
+=======
+    attr_reader   :output_dir_name
+>>>>>>> v1-5-0
 
     def initialize(dir=nil, name="", options={})
       @name = name
@@ -75,12 +81,17 @@ module Dawn
       @ruby_version = get_ruby_version if dir.nil?
       @gemfile_lock = options[:gemfile_name] unless options[:gemfile_name].nil? 
 
-      @views        = detect_views 
+      @stats        = gather_statistics
+
+      @views        = detect_views
       @controllers  = detect_controllers
       @models       = detect_models
 
+      @output_dir_name = output_dir
+
       if $logger.nil?
-        $logger  = Codesake::Commons::Logging.instance
+        require 'logger'
+        $logger = Logger.new(STDOUT)
         $logger.helo "dawn-engine", Dawn::VERSION
       end
       $logger.warn "pattern matching security checks are disabled for Gemfile.lock scan" if @name == "Gemfile.lock"
@@ -92,7 +103,7 @@ module Dawn
         # impersonificate the engine for the mvc it was detected
         debug_me "now I'm switching my name from #{@name} to #{options[:guessed_mvc][:name]}" 
         $logger.err "there are no connected gems... it seems Gemfile.lock parsing failed" if options[:guessed_mvc][:connected_gems].empty?
-        @name = options[:guessed_mvc][:name] 
+        @name = options[:guessed_mvc][:name]
         @mvc_version = options[:guessed_mvc][:version]
         @connected_gems = options[:guessed_mvc][:connected_gems]
         @gemfile_lock_sudo = true
@@ -213,6 +224,7 @@ module Dawn
 
     def get_mvc_version
       "#{@mvc_version}" if is_good_mvc?
+<<<<<<< HEAD
     end
 
     def reset_benchmark
@@ -226,7 +238,44 @@ module Dawn
       @skipped_checks = 0
       @vulnerabilities = []
       @mitigated_issues = []
+=======
+>>>>>>> v1-5-0
     end
+
+    ########################################################################
+    ## Output stuff - START
+    ########################################################################
+
+    # Creates the directory name where dawnscanner results will be saved
+    #
+    # Examples
+    #   engine.create_output_dir
+    #   # => /Users/thesp0nge/dawnscanner/results/railsgoat/20151123
+    #   # => /Users/thesp0nge/dawnscanner/results/railsgoat/20151123_1 (if
+    #               previous directory name exists)
+    def output_dir
+      @output_dir_name = File.join(Dir.home, 'dawnscanner', 'results', File.basename(@target), Time.now.strftime('%Y%m%d'))
+      if Dir.exist?(@output_dir_name)
+        i=1
+        while (Dir.exist?(@output_dir_name)) do
+          @output_dir_name = File.join(Dir.home, 'dawnscanner', 'results', File.basename(@target), "#{Time.now.strftime('%Y%m%d')}_#{i}")
+          i+=1
+        end
+      end
+      @output_dir_name
+    end
+
+    # Creates the directory
+    def create_output_dir
+      FileUtils.mkdir_p(@output_dir_name)
+      @output_dir_name
+    end
+
+    ########################################################################
+    ## Output stuff - END
+    ########################################################################
+
+
 
     ## Security stuff applies here
     #
@@ -261,30 +310,7 @@ module Dawn
       start = Time.now if @benchmarking
 
       @checks.each do |check|
-        if check.name == name
-          unless ((check.kind == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK || check.kind == Dawn::KnowledgeBase::COMBO_CHECK ) && @name == "Gemfile.lock")
-            debug_me "applying check #{check.name}" 
-            @applied_checks += 1
-            @applied << { :name=>name }
-            check.ruby_version = @ruby_version[:version]
-            check.detected_ruby  = @ruby_version if check.kind == Dawn::KnowledgeBase::RUBY_VERSION_CHECK
-            check.dependencies = self.connected_gems if check.kind == Dawn::KnowledgeBase::DEPENDENCY_CHECK
-            check.root_dir = self.target if check.kind  == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK
-            check.options = {:detected_ruby => self.ruby_version, :dependencies => self.connected_gems, :root_dir => self.target } if check.kind == Dawn::KnowledgeBase::COMBO_CHECK
-
-            check_vuln = check.vuln?
-
-            @vulnerabilities  << {:name=> check.name, :severity=>check.severity, :priority=>check.priority, :kind=>check.check_family, :message=>check.message, :remediation=>check.remediation, :evidences=>check.evidences, :vulnerable_checks=>nil} if check_vuln && check.kind !=  Dawn::KnowledgeBase::COMBO_CHECK
-
-            @vulnerabilities  << {:name=> check.name, :severity=>check.severity, :priority=>check.priority, :kind=>check.check_family, :message=>check.message, :remediation=>check.remediation, :evidences=>check.evidences, :vulnerable_checks=>check.vulnerable_checks} if check_vuln && check.kind ==  Dawn::KnowledgeBase::COMBO_CHECK
-
-            @mitigated_issues << {:name=> check.name, :severity=>check.severity, :priority=>check.priority, :kind=>check.check_family, :message=>check.message, :remediation=>check.remediation, :evidences=>check.evidences, :vulnerable_checks=>nil} if check.mitigated?
-            return true
-          else
-            debug_me "skipping check #{check.name}"
-            @skipped_checks += 1
-          end
-        end
+        _do_apply(check) if check.name == name
         @benchmark = {:checks=> @applied_checks - @skipped_checks, :elapsed=>Time.now-start} if @benchmarking
       end
 
@@ -294,6 +320,7 @@ module Dawn
     def apply_all
       @scan_start = Time.now
       debug_me("SCAN STARTED: #{@scan_start}")
+
       # FIXME.20140325
       # Now if no checks are loaded because knowledge base was not previously called, apply and apply_all proudly refuse to run.
       # Reason is simple, load_knowledge_base now needs enabled check array
@@ -317,30 +344,10 @@ module Dawn
       start = Time.now if @benchmarking
 
       @checks.each do |check|
-        unless ((check.kind == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK || check.kind == Dawn::KnowledgeBase::COMBO_CHECK ) && @gemfile_lock_sudo)
-
-          @applied << { :name => name }
-          debug_me "applying check #{check.name}" 
-          @applied_checks += 1
-
-          check.ruby_version = @ruby_version[:version]
-          check.detected_ruby  = @ruby_version if check.kind == Dawn::KnowledgeBase::RUBY_VERSION_CHECK
-          check.dependencies = self.connected_gems if check.kind == Dawn::KnowledgeBase::DEPENDENCY_CHECK
-          check.root_dir = self.target if check.kind  == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK 
-          check.options = {:detected_ruby => self.ruby_version, :dependencies => self.connected_gems, :root_dir => self.target } if check.kind == Dawn::KnowledgeBase::COMBO_CHECK
-          check_vuln = check.vuln?
-
-          @vulnerabilities  << {:name=> check.name, :severity=>check.severity, :priority=>check.priority, :kind=>check.check_family, :message=>check.message, :remediation=>check.remediation, :evidences=>check.evidences, :vulnerable_checks=>nil} if check_vuln && check.kind !=  Dawn::KnowledgeBase::COMBO_CHECK
-
-          @vulnerabilities  << {:name=> check.name, :severity=>check.severity, :priority=>check.priority, :kind=>check.check_family, :message=>check.message, :remediation=>check.remediation, :evidences=>check.evidences, :vulnerable_checks=>check.vulnerable_checks} if check_vuln && check.kind ==  Dawn::KnowledgeBase::COMBO_CHECK
-
-          @mitigated_issues << {:name=> check.name, :severity=>check.severity, :priority=>check.priority, :kind=>check.check_family, :message=>check.message, :remediation=>check.remediation, :evidences=>check.evidences, :vulnerable_checks=>nil} if check.mitigated?
-        else
-          debug_me "skipping check #{check.name}"
-          @skipped_checks += 1
-        end
+        _do_apply(check)
         @benchmark = {:checks=> @applied_checks - @skipped_checks, :elapsed=>Time.now-start} if @benchmarking
       end
+
       @scan_stop = Time.now
       debug_me("SCAN STOPPED: #{@scan_stop}")
 
@@ -383,7 +390,7 @@ module Dawn
     end
 
     def count_vulnerabilities
-      ret = 0 
+      ret = 0
       ret = @vulnerabilities.count unless @vulnerabilities.nil?
       ret +=  @reflected_xss.count unless @reflected_xss.nil?
 
@@ -401,6 +408,61 @@ module Dawn
       hash = File.read(File.join(@target, '.ruby-version')).split('-')
       return {:version=>hash[0], :patchlevel=>hash[1]}
     end
+    def _do_apply(check)
+      unless ((check.kind == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK || check.kind == Dawn::KnowledgeBase::COMBO_CHECK ) && @gemfile_lock_sudo)
 
+        @applied << { :name => name }
+        debug_me "applying check #{check.name}"
+        @applied_checks += 1
+
+        check.ruby_version  = @ruby_version[:version]
+        check.detected_ruby = @ruby_version                           if check.kind == Dawn::KnowledgeBase::RUBY_VERSION_CHECK
+        check.dependencies  = self.connected_gems                     if check.kind == Dawn::KnowledgeBase::DEPENDENCY_CHECK
+        check.root_dir      = self.target                             if check.kind == Dawn::KnowledgeBase::PATTERN_MATCH_CHECK
+        check.options       = {:detected_ruby => self.ruby_version,
+                               :dependencies => self.connected_gems,
+                               :root_dir => self.target }             if check.kind == Dawn::KnowledgeBase::COMBO_CHECK
+        check_vuln          = check.vuln?
+
+        if check_vuln
+
+          vc = nil
+          vc = check.vulnerable_checks if check.kind == Dawn::KnowledgeBase::COMBO_CHECK
+
+          @vulnerabilities  << {:name=> check.name,
+                                :severity=>check.severity,
+                                :priority=>check.priority,
+                                :kind=>check.check_family,
+                                :message=>check.message,
+                                :remediation=>check.remediation,
+                                :evidences=>check.evidences,
+                                :cve_link=>check.cve_link,
+                                :cvss_score=>check.cvss_score,
+                                :vulnerable_checks=>vc}
+
+        end
+
+        @mitigated_issues << {:name=> check.name,
+                              :severity=>check.severity,
+                              :priority=>check.priority,
+                              :kind=>check.check_family,
+                              :message=>check.message,
+                              :remediation=>check.remediation,
+                              :evidences=>check.evidences,
+                              :vulnerable_checks=>nil} if check.mitigated?
+      else
+        debug_me "skipping check #{check.name}"
+        @skipped_checks += 1
+      end
+
+      true
+    end
+
+    def gather_statistics
+      dirs = CodeMetrics::StatsDirectories.new
+      puts target
+      dirs.add_directories("#{target}/**/*.rb", "#{target}")
+      puts CodeMetrics::Statistics.new(*dirs).to_s
+    end
   end
 end
