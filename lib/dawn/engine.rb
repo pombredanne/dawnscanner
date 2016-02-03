@@ -1,5 +1,5 @@
 # Statistics stuff
-require 'code_metrics/statistics'
+# require 'code_metrics/statistics'
 
 module Dawn
   module Engine
@@ -45,13 +45,10 @@ module Dawn
     attr_reader   :applied_checks
     attr_reader   :skipped_checks
 
-<<<<<<< HEAD
     # We introduce benchmarking for apply* methods
     attr_accessor :benchmarking
     attr_reader   :benchmark
-=======
     attr_reader   :output_dir_name
->>>>>>> v1-5-0
 
     def initialize(dir=nil, name="", options={})
       @name = name
@@ -224,7 +221,6 @@ module Dawn
 
     def get_mvc_version
       "#{@mvc_version}" if is_good_mvc?
-<<<<<<< HEAD
     end
 
     def reset_benchmark
@@ -238,8 +234,6 @@ module Dawn
       @skipped_checks = 0
       @vulnerabilities = []
       @mitigated_issues = []
-=======
->>>>>>> v1-5-0
     end
 
     ########################################################################
@@ -458,11 +452,11 @@ module Dawn
       true
     end
 
-    def gather_statistics
-      dirs = CodeMetrics::StatsDirectories.new
-      puts target
-      dirs.add_directories("#{target}/**/*.rb", "#{target}")
-      puts CodeMetrics::Statistics.new(*dirs).to_s
-    end
+    # def gather_statistics
+      # dirs = CodeMetrics::StatsDirectories.new
+      # puts target
+      # dirs.add_directories("#{target}/**/*.rb", "#{target}")
+      # puts CodeMetrics::Statistics.new(*dirs).to_s
+    # end
   end
 end

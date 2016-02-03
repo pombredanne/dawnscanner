@@ -20,10 +20,11 @@ box:
 [![Coverage Status](https://coveralls.io/repos/thesp0nge/dawnscanner/badge.png)](https://coveralls.io/r/thesp0nge/dawnscanner)
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/thesp0nge/dawnscanner/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 [![Inline docs](http://inch-ci.org/github/thesp0nge/dawnscanner.png?branch=master)](http://inch-ci.org/github/thesp0nge/dawnscanner)
+[![Gitter](https://badges.gitter.im/thesp0nge/dawnscanner.svg)](https://gitter.im/thesp0nge/dawnscanner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ---
 
-dawnscanner version 1.5.0 has 209 security checks loaded in its knowledge
+dawnscanner version 1.5.2 has 209 security checks loaded in its knowledge
 base. Most of them are CVE bulletins applying to gems or the ruby interpreter
 itself. There are also some check coming from Owasp Ruby on Rails cheatsheet.
 

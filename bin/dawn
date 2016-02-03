@@ -197,6 +197,8 @@ end
 
 target=ARGV.shift
 
+target = File.expand_path(".") if target == "."
+
 $logger.helo APPNAME, Dawn::VERSION
 r = Dawn::Registry.new
 
@@ -309,11 +311,8 @@ if options[:output] == "count"
   Kernel.exit(0)
 end
 
-<<<<<<< HEAD
 Dawn::Reporter.new({:engine=>engine, :apply_all_code=>ret, :format=>options[:output].to_sym, :filename=>options[:filename]}).report unless engine.benchmarking
 
-=======
-Dawn::Reporter.new({:engine=>engine, :apply_all_code=>ret, :format=>options[:output].to_sym, :filename=>options[:filename]}).report
 if (r.do_save({:target=>File.basename(engine.target),
            :scan_started=>engine.scan_start,
            :scan_duration => engine.scan_time.round(3),
@@ -326,5 +325,4 @@ else
     $logger.error error
   end
 end
->>>>>>> v1-5-0
 $logger.bye
