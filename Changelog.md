@@ -5,7 +5,51 @@ It supports [Sinatra](http://www.sinatrarb.com),
 [Padrino](http://www.padrinorb.com) and [Ruby on Rails](http://rubyonrails.org)
 frameworks.
 
-_latest update: Tue Mar  1 23:11:10 CET 2016_
+_latest update: Tue Nov  1 22:47:56 CET 2016_
+
+## Version 1.6.7 - codename: Tow Mater (2016-11-24)
+
+* Removed a typo preventing CVE bulletins to be loaded in the KB
+* Removed CVSS as external dependency. Now it is a Dawn::Cvss module
+* Dropped sys-uname dependency. Using shell 'uname -r' instead
+* Dropped ptools dependency. Pattern matching will run also with binary files.
+* Applied pull request #217 - Add bundler as runtime dependency - by @kolybasov
+* Applied pull request #216 - Add TraviCI setup to README - by @vpolimenov
+* Applied pull request #215 - Fixes issue where debug mode was always enabled by @bartj3
+
+## Version 1.6.6 - codename: Tow Mater (2016-11-01)
+
+* Changed config filename to dawnscanner.yml
+* Adding a check for CVE-2016-5697: XML signature wrapping attack in ruby-saml
+* Adding a check for CVE-2016-6316: Possible XSS Vulnerability in Action View
+* Adding a check for CVE-2016-6317: Unsafe Query Generation Risk in Active
+  Record
+* Adding a check for CVE-2016-6582: Doorkeeper gem does not revoke tokens &
+  uses wrong auth/auth method
+* Issue #172 - Adding a check for OSVDB-132234: rack-attack Gem for Ruby
+  missing normalization before request path processing. Please note that OSVDB
+  it has been shutted down, however I was not able to find a CVE entry for
+  this.
+
+## Version 1.6.5 - codename: Tow Mater (2016-09-30)
+
+* Issue #212 - CVE-2014-2538 is marked as being vulnerable to rack-ssl 1.3.4.
+  The check was triggered for rack-ssl version < 1.4.0. However 1.3.4 is marked
+  as safe, so the check has to be changed as well.
+
+## Version 1.6.4 - codename: Tow Mater (2016-09-27)
+
+* Issue #199 - CVE-2015-4020 seems to give the wrong Solution
+* Issue #168 - Dawn fails for many CVEs that rails 3.2.22 is not vulnerable to
+
+## Version 1.6.3 - codename: Tow Mater (2016-09-06)
+
+* Issue #107 - Applying PULL REQUEST from @MKgridSec about CVE-2013-0334 check
+* Issue #196 - Applying PULL REQUEST from @MKgridSec about CVE 2016 0751
+  incorrectly flagged
+* Issue #197 - Applying PULL REQUEST from @MKgridSec about CVE-2016-2098
+  incorrectly flagged
+
 
 ## Version 1.6.2 - codename: Tow Mater (2016-03-02)
 

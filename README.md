@@ -18,13 +18,13 @@ box:
 [![Build Status](https://travis-ci.org/thesp0nge/dawnscanner.png?branch=master)](https://travis-ci.org/thesp0nge/dawnscanner)
 [![Dependency Status](https://gemnasium.com/thesp0nge/dawnscanner.png)](https://gemnasium.com/thesp0nge/dawnscanner)
 [![Coverage Status](https://coveralls.io/repos/thesp0nge/dawnscanner/badge.png)](https://coveralls.io/r/thesp0nge/dawnscanner)
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/thesp0nge/dawnscanner/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+[![Code Triagers Badge](https://www.codetriage.com/thesp0nge/dawnscanner/badges/users.svg)](https://www.codetriage.com/thesp0nge/dawnscanner)
 [![Inline docs](http://inch-ci.org/github/thesp0nge/dawnscanner.png?branch=master)](http://inch-ci.org/github/thesp0nge/dawnscanner)
 [![Gitter](https://badges.gitter.im/thesp0nge/dawnscanner.svg)](https://gitter.im/thesp0nge/dawnscanner?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 ---
 
-dawnscanner version 1.6.2 has 229 security checks loaded in its knowledge
+dawnscanner version 1.6.6 has 235 security checks loaded in its knowledge
 base. Most of them are CVE bulletins applying to gems or the ruby interpreter
 itself. There are also some check coming from Owasp Ruby on Rails cheatsheet.
 
@@ -123,44 +123,50 @@ $ dawn -h
 Usage: dawn [options] target_directory
 
 Examples:
-  $ dawn a_sinatra_webapp_directory
-  $ dawn -C the_rails_blog_engine
-  $ dawn -C --json a_sinatra_webapp_directory
-  $ dawn --ascii-tabular-report my_rails_blog_ecommerce
-  $ dawn --html -F my_report.html my_rails_blog_ecommerce
+	$ dawn a_sinatra_webapp_directory
+	$ dawn -C the_rails_blog_engine
+	$ dawn -C --json a_sinatra_webapp_directory
+	$ dawn --ascii-tabular-report my_rails_blog_ecommerce
+	$ dawn --html -F my_report.html my_rails_blog_ecommerce
 
-   -r, --rails          force dawn to consider the target a rails application
-   -s, --sinatra        force dawn to consider the target a sinatra application
-   -p, --padrino        force dawn to consider the target a padrino application
-   -G, --gem-lock       force dawn to scan only for vulnerabilities affecting dependencies in Gemfile.lock
-   -a, --ascii-tabular-report   cause dawn to format findings using table in ascii art
-   -j, --json                   cause dawn to format findings using json
-   -C, --count-only             dawn will only count vulnerabilities (useful for scripts)
-   -z, --exit-on-warn           dawn will return number of found vulnerabilities as exit code
-   -F, --file filename          tells dawn to write output to filename
-   -c, --config-file filename   tells dawn to load configuration from filename
+   -r, --rails					force dawn to consider the target a rails application (DEPRECATED)
+   -s, --sinatra				force dawn to consider the target a sinatra application (DEPRECATED)
+   -p, --padrino				force dawn to consider the target a padrino application (DEPRECATED)
+   -G, --gem-lock				force dawn to scan only for vulnerabilities affecting dependencies in Gemfile.lock (DEPRECATED)
+   -d, --dependencies				force dawn to scan only for vulnerabilities affecting dependencies in Gemfile.lock
+
+Reporting
+
+   -a, --ascii-tabular-report			cause dawn to format findings using tables in ascii art (DEPRECATED)
+   -j, --json					cause dawn to format findings using json
+   -K, --console					cause dawn to format findings using plain ascii text
+   -C, --count-only				dawn will only count vulnerabilities (useful for scripts)
+   -z, --exit-on-warn				dawn will return number of found vulnerabilities as exit code
+   -F, --file filename				tells dawn to write output to filename
+   -c, --config-file filename			tells dawn to load configuration from filename
 
 Disable security check family
 
-       --disable-cve-bulletins  disable all CVE security checks
-       --disable-code-quality   disable all code quality checks
-       --disable-code-style     disable all code style checks
-       --disable-owasp-ror-cheatsheet   disable all Owasp Ruby on Rails cheatsheet checks
-       --disable-owasp-top-10           disable all Owasp Top 10 checks
+       --disable-cve-bulletins			disable all CVE security checks
+       --disable-code-quality			disable all code quality checks
+       --disable-code-style			disable all code style checks
+       --disable-owasp-ror-cheatsheet		disable all Owasp Ruby on Rails cheatsheet checks
+       --disable-owasp-top-10			disable all Owasp Top 10 checks
 
-Flags useful to query dawnscanner
+Flags useful to query Dawn
 
-       -S, --search-knowledge-base [check_name]   search check_name in the knowledge base
-           --list-knowledge-base                  list knowledge-base content
-           --list-known-families                  list security check families contained in dawn's knowledge base
-           --list-known-framework                 list ruby MVC frameworks supported by dawn
+   -S, --search-knowledge-base [check_name]	search check_name in the knowledge base
+       --list-knowledge-base			list knowledge-base content
+       --list-known-families			list security check families contained in dawn's knowledge base
+       --list-known-framework			list ruby MVC frameworks supported by dawn
+       --list-scan-registry			list past scan informations stored in scan registry 
 
 Service flags
 
-   -D, --debug                                  enters dawn debug mode
-   -V, --verbose                                the output will be more verbose
-   -v, --version                                show version information
-   -h, --help                                   show this help
+   -D, --debug					enters dawn debug mode
+   -V, --verbose				the output will be more verbose
+   -v, --version				show version information
+   -h, --help					show this help
 ```
 
 ### Rake task
@@ -305,31 +311,10 @@ Thank you.
 
 [Matteo](https://github.com/matteocollina): for ideas on API and their usage with [github.com](https://github.com) hooks
 
-## Contribute to dawnscannerscanner
-
-Are you interested in contributing to dawnscanner project? Great, here is
-some very basic rules in order to make rocking pull requests.
-
-First of all, I use the branching model described in [this
-post](http://nvie.com/posts/a-successful-git-branching-model/). There are two
-major branches:
-
-* master: it contains in every moment the code for the latest dawnscanner
-  released gem. You can't make branches from here unless you're working on a
-  bugfix.
-* development: it contains the unstable code that is going to be the next
-  dawnscanner realease. You start from here. Pick a task on the Roadmap.md
-  and create a separated branch to work on your feature to. When you're ready
-  (remember to include also spec files), submit your pull request. If the code
-  will be fine, it will be merged into the development tree ready to be include
-  in upcoming gem version.
-
-No branch from master it would be analyzed unless they are related to bugfix.
-In this case, the branch name must be something like _issue\_#xx\_description_
 
 ## LICENSE
 
-Copyright (c) 2013-2015 Paolo Perego <paolo@dawnscanner.org>
+Copyright (c) 2013-2016 Paolo Perego <paolo@dawnscanner.org>
 
 MIT License
 

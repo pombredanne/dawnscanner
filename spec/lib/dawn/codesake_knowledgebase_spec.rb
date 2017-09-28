@@ -30,11 +30,16 @@ describe "The Codesake Dawn knowledge base" do
     expect(sc.class).to eq(Dawn::Kb::CVE_2013_1855)
   end 
 
-
   it "must have test for CVE_2013_0333" do 
     sc = kb.find("CVE-2013-0333")
     expect(sc).not_to   be_nil
     expect(sc.class).to eq(Dawn::Kb::CVE_2013_0333)
+  end
+
+  it "must have test for CVE_2013_0334" do 
+    sc = kb.find("CVE-2013-0334")
+    expect(sc).not_to   be_nil
+    expect(sc.class).to eq(Dawn::Kb::CVE_2013_0334)
   end
 
   it "must have test for CVE_2013_1857" do
@@ -1173,5 +1178,25 @@ it "must have test for CVE-2016-2097" do
   sc = kb.find("CVE-2016-2097")
   expect(sc).not_to   be_nil
   expect(sc.class).to eq(Dawn::Kb::CVE_2016_2097)
+end
+it "must have test for OSVDB_132234" do
+  sc = kb.find("OSVDB_132234")
+  expect(sc).not_to   be_nil
+  expect(sc.class).to eq(Dawn::Kb::OSVDB_132234)
+end
+it "must have test for CVE-2016-6317" do
+  sc = kb.find("CVE-2016-6317")
+  expect(sc).not_to   be_nil
+  expect(sc.class).to eq(Dawn::Kb::CVE_2016_6317)
+end
+it "must have test for CVE-2016-6316" do
+  sc = kb.find("CVE-2016-6316")
+  expect(sc).not_to   be_nil
+  expect(sc.class).to eq(Dawn::Kb::CVE_2016_6316)
+end
+it "must have test for CVE-2016-5697" do
+  sc = kb.find("CVE-2016-5697")
+  expect(sc).not_to   be_nil
+  expect(sc.class).to eq(Dawn::Kb::CVE_2016_5697)
 end
 end

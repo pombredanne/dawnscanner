@@ -152,6 +152,7 @@ require "dawn/kb/cve_2013_0277"
 require "dawn/kb/cve_2013_0284"
 require "dawn/kb/cve_2013_0285"
 require "dawn/kb/cve_2013_0333"
+require "dawn/kb/cve_2013_0334"
 require "dawn/kb/cve_2013_1607"
 require "dawn/kb/cve_2013_1655"
 require "dawn/kb/cve_2013_1656"
@@ -266,6 +267,10 @@ require "dawn/kb/cve_2016_0752"
 require "dawn/kb/cve_2016_0753"
 require "dawn/kb/cve_2016_2097"
 require "dawn/kb/cve_2016_2098"
+require "dawn/kb/cve_2016_5697"
+require "dawn/kb/cve_2016_6316"
+require "dawn/kb/cve_2016_6317"
+require "dawn/kb/cve_2016_6582"
 
 # OSVDB
 
@@ -285,6 +290,7 @@ require "dawn/kb/osvdb_119927"
 require "dawn/kb/osvdb_120415"
 require "dawn/kb/osvdb_120857"
 require "dawn/kb/osvdb_121701"
+require "dawn/kb/osvdb_132234"
 
 
 
@@ -465,6 +471,7 @@ module Dawn
           Dawn::Kb::CVE_2013_0284.new,
           Dawn::Kb::CVE_2013_0285.new,
           Dawn::Kb::CVE_2013_0333.new,
+          Dawn::Kb::CVE_2013_0334.new,
           Dawn::Kb::CVE_2013_1607.new,
           Dawn::Kb::CVE_2013_1655.new,
           Dawn::Kb::CVE_2013_1656.new,
@@ -567,6 +574,10 @@ module Dawn
           Dawn::Kb::CVE_2016_0753.new,
           Dawn::Kb::CVE_2016_2097.new,
           Dawn::Kb::CVE_2016_2098.new,
+          Dawn::Kb::CVE_2016_5697.new,
+          Dawn::Kb::CVE_2016_6316.new,
+          Dawn::Kb::CVE_2016_6317.new,
+          Dawn::Kb::CVE_2016_6582.new,
 
 
           # OSVDB Checks are still here since are all about dependencies
@@ -586,6 +597,7 @@ module Dawn
           Dawn::Kb::OSVDB_120415.new,
           Dawn::Kb::OSVDB_120857.new,
           Dawn::Kb::OSVDB_121701.new,
+          Dawn::Kb::OSVDB_132234.new,
       ]
         # END @cve_security_checks array
         # START @owasp_ror_cheatsheet_checks array
@@ -609,7 +621,7 @@ module Dawn
 
           ret = []
           ret += @aux_checks
-          ret += @cve_security_checks         if @enabled_checks.include?(:cve_bulletin)
+          ret += @cve_security_checks         if @enabled_checks.include?(:bulletin)
           ret += @owasp_ror_cheatsheet_checks if @enabled_checks.include?(:owasp_ror_cheatsheet)
           ret += @code_quality_checks         if @enabled_checks.include?(:code_quality)
 
